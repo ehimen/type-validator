@@ -4,7 +4,7 @@
     "description": "Runtime validator for asserting type-safety on data.",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "/usr/local/bin/node ./node_modules/mocha/bin/_mocha --recursive --timeout=259200000 --ui bdd ./spec"
     },
     "keywords": [
         "types",
@@ -14,6 +14,10 @@
     "author": "Andy Cook <andrewcook1990@gmail.com>",
     "license": "MIT",
     "dependencies": {
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://bitbucket.org/Ehimen/type-validator"
     },
     "devDependencies": {
         "chai": "~1.9.1",
