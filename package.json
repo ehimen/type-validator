@@ -1,6 +1,6 @@
 {
     "name": "type-validator",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Runtime validator for asserting type-safety on data.",
     "main": "index.js",
     "scripts": {
