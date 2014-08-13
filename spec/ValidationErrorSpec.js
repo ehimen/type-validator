@@ -19,4 +19,8 @@ describe('ValidationError', function() {
         expect(validationError).to.be.instanceOf(Error);
     });
 
+    it('should be a type error', function() {
+        expect(validationError).to.be.instanceOf(TypeError);
+    });
+
 });
