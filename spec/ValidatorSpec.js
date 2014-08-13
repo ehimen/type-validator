@@ -6,7 +6,8 @@ var expect = require('chai').expect,
 
 describe('Validator', function() {
 
-    var validator, assertTypeOf, assertInstanceOf, shouldThrow;
+    var validator, assertTypeOf, assertInstanceOf, shouldThrow,
+        assertHasProperty, assertPropertyTypeOf, assertPropertyInstanceOf;
 
     beforeEach(function() {
 
@@ -31,10 +32,35 @@ describe('Validator', function() {
         assertInstanceOf = function(value, instance, expectedError) {
             var assertFn;
             assertFn = function() {
-                validator.assertInstanceOf(value, instance, 'Test validation error');
+                validator.assertInstanceOf(value, instance, 'TestType', 'Test validation error');
             };
             shouldThrow(assertFn, expectedError);
-        }
+        };
+
+        assertHasProperty = function(value, property, expectedError) {
+            var assertFn;
+            assertFn = function() {
+                validator.assertHasProperty(value, property, 'Test validation error');
+            };
+            shouldThrow(assertFn, expectedError);
+        };
+
+        assertPropertyInstanceOf = function(value, property, type, expectedError) {
+            var assertFn;
+            assertFn = function() {
+                validator.assertPropertyInstanceOf(value, property, type, 'TestType', 'Test validation error');
+            };
+            shouldThrow(assertFn, expectedError);
+        };
+
+
+        assertPropertyTypeOf = function(value, property, type, expectedError) {
+            var assertFn;
+            assertFn = function() {
+                validator.assertPropertyTypeOf(value, property, type, 'Test validation error');
+            };
+            shouldThrow(assertFn, expectedError);
+        };
 
     });
 
@@ -79,6 +105,8 @@ describe('Validator', function() {
             assertTypeOf(123, 'number');
             assertTypeOf(0.3, 'number');
             assertTypeOf(0.12e8, 'number');
+            assertTypeOf(null, 'object');
+            assertTypeOf(undefined, 'undefined');
             assertTypeOf('123', 'string');
             assertTypeOf('', 'string');
             assertTypeOf({}, 'object');
@@ -122,6 +150,62 @@ describe('Validator', function() {
                 assertInstanceOf(new SubConstructor(), SubConstructor);
             });
 
+            it('should throw when asserting property instance when not that instance', function() {
+                assertPropertyInstanceOf({foo: 'bar'}, 'foo', TestConstructor, ValidationError);
+                assertPropertyInstanceOf({foo: 'bar'}, 'foo', SubConstructor, ValidationError);
+                assertPropertyInstanceOf({foo: {}}, 'foo', TestConstructor, ValidationError);
+                assertPropertyInstanceOf(null, 'foo', TestConstructor, ValidationError);
+            });
+
+            it('should not throw when asserting property instance when that instance', function() {
+                assertPropertyInstanceOf({foo: new TestConstructor()}, 'foo', TestConstructor);
+                assertPropertyInstanceOf({foo: new SubConstructor()}, 'foo', TestConstructor);
+                assertPropertyInstanceOf({foo: new SubConstructor()}, 'foo', SubConstructor);
+            });
+
+        });
+
+    });
+
+    describe('property assertions', function() {
+
+        it('should not throw when asserting object has property', function() {
+            assertHasProperty({foo: 'bar'}, 'foo');
+            assertHasProperty((function() {}).foo = 'bar', 'foo');
+            assertHasProperty([].foo = 'bar', 'foo');
+        });
+
+        it('should throw when asserting object does not have property', function() {
+            assertHasProperty({}, 'foo', ValidationError);
+            assertHasProperty((function() {}), 'foo', ValidationError);
+            assertHasProperty([], 'foo', ValidationError);
+            assertHasProperty(false, 'foo', ValidationError);
+            assertHasProperty(123, 'foo', ValidationError);
+            assertHasProperty('123', 'foo', ValidationError);
+            assertHasProperty(null, 'foo', ValidationError);
+            assertHasProperty(undefined, 'foo', ValidationError);
+        });
+
+        it('should throw when asserting object type of when not that type', function() {
+            assertPropertyTypeOf({foo: 'bar'}, 'foo', 'function', ValidationError);
+            assertPropertyTypeOf({foo: 'bar'}, 'foo', 'number', ValidationError);
+            assertPropertyTypeOf({foo: 'bar'}, 'foo', 'boolean', ValidationError);
+            assertPropertyTypeOf({foo: 'bar'}, 'foo', 'object', ValidationError);
+            assertPropertyTypeOf({foo: {}}, 'foo', 'string', ValidationError);
+            assertPropertyTypeOf({foo: {}}, 'foo', 'number', ValidationError);
+            assertPropertyTypeOf({foo: {}}, 'foo', 'function', ValidationError);
+            assertPropertyTypeOf({foo: {}}, 'foo', 'boolean', ValidationError);
+            assertPropertyTypeOf({foo: null}, 'foo', 'string', ValidationError);
+            assertPropertyTypeOf({}, 'foo', 'string', ValidationError);
+        });
+
+        it('should not throw when asserting object type of when that type', function() {
+            assertPropertyTypeOf({foo: 'bar'}, 'foo', 'string');
+            assertPropertyTypeOf({foo: 123}, 'foo', 'string');
+            assertPropertyTypeOf({foo: {}}, 'foo', 'object');
+            assertPropertyTypeOf({foo: []}, 'foo', 'object');
+            assertPropertyTypeOf({foo: null}, 'foo', 'object');
+            assertPropertyTypeOf({foo: undefined}, 'foo', 'undefined');
         });
 
     });
