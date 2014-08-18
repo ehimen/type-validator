@@ -1,6 +1,6 @@
 var expect = require('chai').expect,
-    Validator = require('../lib/Validator'),
-    ValidationError = require('../lib/ValidationError');
+    Validator = require('../lib/Validator/Validator'),
+    ValidationError = require('../lib/ValidationError/ValidationError');
 
 
 
@@ -17,14 +17,14 @@ describe('Validator', function() {
             if (expectedError) {
                 expect(fn).to.throw(expectedError);
             } else {
-                expect(fn).to.not.throw('nothing');
+                expect(fn).to.not.throw();
             }
         };
 
         assertTypeOf = function(value, type, expectedError) {
             var assertFn;
             assertFn = function() {
-                validator.assertTypeOf(value, type, 'Test validation error')
+                validator.assert(value).typeOf(type, 'Test validation error');
             };
             shouldThrow(assertFn, expectedError);
         };
@@ -32,7 +32,7 @@ describe('Validator', function() {
         assertInstanceOf = function(value, instance, expectedError) {
             var assertFn;
             assertFn = function() {
-                validator.assertInstanceOf(value, instance, 'TestType', 'Test validation error');
+                validator.assert(value).instanceOf(instance, 'TestType', 'Test validation error');
             };
             shouldThrow(assertFn, expectedError);
         };
@@ -40,7 +40,7 @@ describe('Validator', function() {
         assertHasProperty = function(value, property, expectedError) {
             var assertFn;
             assertFn = function() {
-                validator.assertHasProperty(value, property, 'Test validation error');
+                validator.assert(value).hasProperty(property).elseThrow('Test validation error');
             };
             shouldThrow(assertFn, expectedError);
         };
@@ -48,7 +48,7 @@ describe('Validator', function() {
         assertPropertyInstanceOf = function(value, property, type, expectedError) {
             var assertFn;
             assertFn = function() {
-                validator.assertPropertyInstanceOf(value, property, type, 'TestType', 'Test validation error');
+                validator.assert(value).hasProperty(property).instanceOf(type, 'TestType', 'Test validation error');
             };
             shouldThrow(assertFn, expectedError);
         };
@@ -57,7 +57,7 @@ describe('Validator', function() {
         assertPropertyTypeOf = function(value, property, type, expectedError) {
             var assertFn;
             assertFn = function() {
-                validator.assertPropertyTypeOf(value, property, type, 'Test validation error');
+                validator.assert(value).hasProperty(property).instanceOf(type, 'Test validation error');
             };
             shouldThrow(assertFn, expectedError);
         };
@@ -171,8 +171,6 @@ describe('Validator', function() {
 
         it('should not throw when asserting object has property', function() {
             assertHasProperty({foo: 'bar'}, 'foo');
-            assertHasProperty((function() {}).foo = 'bar', 'foo');
-            assertHasProperty([].foo = 'bar', 'foo');
         });
 
         it('should throw when asserting object does not have property', function() {
@@ -201,11 +199,67 @@ describe('Validator', function() {
 
         it('should not throw when asserting object type of when that type', function() {
             assertPropertyTypeOf({foo: 'bar'}, 'foo', 'string');
-            assertPropertyTypeOf({foo: 123}, 'foo', 'string');
+            assertPropertyTypeOf({foo: 123}, 'foo', 'number');
             assertPropertyTypeOf({foo: {}}, 'foo', 'object');
             assertPropertyTypeOf({foo: []}, 'foo', 'object');
             assertPropertyTypeOf({foo: null}, 'foo', 'object');
             assertPropertyTypeOf({foo: undefined}, 'foo', 'undefined');
+        });
+
+        it('should validate when chaining property checks', function() {
+
+            var obj;
+            obj = {
+                'foo': {
+                    'bar': {
+                        'baz': 'qux'
+                    }
+                }
+            };
+
+            expect(function() {
+                validator.assert(obj).hasProperty('foo').hasProperty('bar').hasProperty('baz').typeOf('string');
+            }).to.not.throw();
+
+            expect(function() {
+                validator.assert(obj).hasProperty('foo').hasProperty('bar').hasProperty('baz').elseThrow('Message');
+            }).to.not.throw();
+
+            expect(function() {
+                validator.assert(obj).hasProperty('foo').hasProperty('bar').hasProperty('baz').typeOf('number');
+            }).to.throw(ValidationError);
+
+            expect(function() {
+                validator.assert(obj).hasProperty('foo').typeOf('number');
+            }).to.throw(ValidationError);
+
+            expect(function() {
+                validator.assert(obj).hasProperty('foo').hasProperty('bar').typeOf('number');
+            }).to.throw(ValidationError);
+
+
+        });
+
+    });
+
+    describe('enabled checks', function() {
+
+        var validator;
+
+        beforeEach(function() {
+            validator = new (require('./../lib/Validator/Validator'))({enabled: false});
+        });
+
+        it('should not throw errors if disabled', function() {
+            expect(function() {
+                validator.assert('123').typeOf('number');
+            }).to.not.throw();
+            expect(function() {
+                validator.assert({}).typeOf('string');
+            }).to.not.throw();
+            expect(function() {
+                validator.assert(null).typeOf('boolean');
+            }).to.not.throw();
         });
 
     });

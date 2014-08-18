@@ -1,5 +1,5 @@
 var expect = require('chai').expect,
-    ValidationError = require('../lib/ValidationError');
+    ValidationError = require('../lib/ValidationError/ValidationError');
 
 
 
