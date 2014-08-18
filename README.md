@@ -30,13 +30,13 @@ var validator = require('type-validator').get({
 // Directly on arguments.
 MyConstructor.prototype.myFunction = function(incomingArg)
 {
-    validator.assertTypeOf(incomingArg, 'string', 'myFunction expects a string');
+    validator.assert(incomingArg).typeOf('string', 'myFunction expects a string');
 };
 
 // With object properties.
 MyConstructor.prototype.myFunction = function(incomingArgObj)
 {
-    validator.assertPropertyTypeOf(incomingArgObj, 'foo', 'string', 'myFunction expect object with property "foo" as number');
+    validator.assert(incomingArgObj).hasProperty('foo').typeOf('string', 'myFunction expect object with property "foo" as number');
 };
 ```
 
@@ -46,13 +46,35 @@ MyConstructor.prototype.myFunction = function(incomingArgObj)
 // Directly on arguments.
 MyConstructor.prototype.myFunction = function(incomingArg)
 {
-    validator.assertTypeOf(incomingArg, MyOtherConstructor, 'MyOtherConstructor', 'myFunction expects an instanceof MyOtherConstructor');
+    validator.assert(incomingArg).instanceOf(MyOtherConstructor, 'MyOtherConstructor', 'myFunction expects an instanceof MyOtherConstructor');
 };
 
 // With object properties.
 MyConstructor.prototype.myFunction = function(incomingArgObj)
 {
-    validator.assertPropertyTypeOf(incomingArgObj, 'foo', 'MyOtherConstructor', 'myFunction expect object with property "foo" as MyOtherConstructor');
+    validator.assert(incomingArgObj).hasProperty('foo').instanceOf('MyOtherConstructor', 'myFunction expect object with property "foo" as MyOtherConstructor');
+};
+```
+
+#### Existence
+You can chain property exists checks, optionally checking the type/instance at the end of the chain.
+```
+MyConstructor.prototype.myFunction = function(incomingArgObj)
+{
+    validator.assert(incomingArgObj)
+        .hasProperty('foo')
+        .hasProperty('bar')
+        .hasProperty('baz')
+        .elseThrow('myFunction expect object with property "foo" with property "bar" with property "baz"');
+};
+
+MyConstructor.prototype.myFunction = function(incomingArgObj)
+{
+    validator.assert(incomingArgObj)
+        .hasProperty('foo')
+        .hasProperty('bar')
+        .hasProperty('baz')
+        .instanceOf('MyOtherConstructor', 'myFunction expect object with property "foo" with property "bar" with property "baz" as MyOtherConstructor');
 };
 ```
 
