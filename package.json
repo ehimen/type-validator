@@ -17,7 +17,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://bitbucket.org/Ehimen/type-validator"
+        "url": "http://github.com/EhimenUK/type-validator"
     },
     "devDependencies": {
         "chai": "~1.9.1",
