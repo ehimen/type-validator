@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/EhimenUK/type-validator.svg?branch=master)](https://travis-ci.org/EhimenUK/type-validator)
+
 # Type Validator
 A simple library for providing runtime type safety. Encourages robust code when used to catch errors early.
 
