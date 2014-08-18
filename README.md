@@ -25,6 +25,7 @@ var validator = require('type-validator').get({
 ### Assertions
 
 #### Type Of
+Performs a Javascript type of check against a simple type.
 
 ```
 // Directly on arguments.
@@ -41,6 +42,7 @@ MyConstructor.prototype.myFunction = function(incomingArgObj)
 ```
 
 #### Instance Of
+Performs a Javascript instanceof check against a constructor function.
 
 ```
 // Directly on arguments.
