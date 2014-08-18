@@ -4,7 +4,7 @@
     "description": "Runtime validator for asserting type-safety on data.",
     "main": "index.js",
     "scripts": {
-        "test": "/usr/local/bin/node ./node_modules/mocha/bin/_mocha --recursive --timeout=259200000 --ui bdd ./spec"
+        "test": "node ./node_modules/mocha/bin/_mocha --recursive --timeout=259200000 --ui bdd ./spec"
     },
     "keywords": [
         "types",
