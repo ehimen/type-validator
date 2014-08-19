@@ -39,7 +39,7 @@ MyConstructor.prototype.myFunction = function(incomingArg)
 // With object properties.
 MyConstructor.prototype.myFunction = function(incomingArgObj)
 {
-    validator.assert(incomingArgObj).hasProperty('foo').typeOf('string', 'myFunction expect object with property "foo" as number');
+    validator.assert(incomingArgObj).hasProperty('foo').typeOf('string', 'myFunction expect object with property "foo" as string');
 };
 ```
 
