@@ -1,4 +1,4 @@
-var Validator = require('./lib/Validator');
+var Validator = require('./lib/Validator/Validator');
 
 var singleValidator;
 
